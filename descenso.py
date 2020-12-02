@@ -7,8 +7,9 @@ def descenso_grad(f,X0,eta):
     def partial(g,k,X):
         h = 1e-9
         Y = np.copy(X)
-        X[k-1]  =X[k-1]+h
+        X[k-1] = X[k-1]+h
         dp = (g(X)-g(Y))/h
+        print("dp", dp)
         return dp
     #Ahora definimos la función que nos dará el gradiente
     def grad(f,X):
@@ -16,11 +17,15 @@ def descenso_grad(f,X0,eta):
         for i in np.arange(0,len(X)):
             ai=partial(f,i+1,X)
             grd.append(ai)
+        print("grd", grd)
         return grd
     #Ahora se hacen las iteraciones
     i=0
     while True:
+    # for _ in range(10):
         i=i+1
-        X0=X0-eta*np.array(grad(f,X0))
+        X0 -= eta*np.array(grad(f,X0))
+        print("X0", X0)
+
         if np.linalg.norm(grad(f,X0))<10e-8 or i>40: break
     return X0
