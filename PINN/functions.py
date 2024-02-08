@@ -2,33 +2,10 @@
 import torch
 from scipy.integrate import odeint
 import numpy as np
-# def nth_derivative(net, x, n):
-#     """Esta función está creada para regresar la derivada temporal de la función ann, asumiendo que 
-#     la primer columna de x es el tiempo siempre
-#     x=[t, param_1, param_2,...] 
-    
-#     x debe ser un tensor: torch.Size([n, m])
-
-#     Para el buen funcionamiento: net(x)[0].shape = torch.Size([1])
-#     """
-#     x.requires_grad=True
-#     # Initialize the gradient tensor to 1.0, as the 0th derivative is the function itself.
-#     ann=net(x)
-#     grad_tensor = torch.ones(ann.size(), dtype=torch.float32, requires_grad=True)
-#     for _ in range(n):
-#         Dann=torch.autograd.grad(ann, x, grad_outputs=grad_tensor, create_graph=True)[0][:,0]
-#         Dann=Dann.reshape(ann.shape)
-#         ann=Dann
-#     return ann
-
-def nth_derivative(net, x:torch.Tensor, j:int, i:int ,n:int) -> torch.Tensor:
-    """
-    Esta función está creada para regresar la n-derivada de la componente j de la
-    función ann respecto de la variable i. 
-    
-    ann(x)=(ann_0(x), ann_1(x)...,ann_j(x)...).
-    
-    Con x=(x_0,x_1,...,x_i,...)
+def nth_derivative(net, x, n):
+    """Esta función está creada para regresar la derivada temporal de la función ann, asumiendo que 
+    la primer columna de x es el tiempo siempre
+    x=[t, param_1, param_2,...] 
     
     x debe ser un tensor: torch.Size([n, m])
 
@@ -36,10 +13,10 @@ def nth_derivative(net, x:torch.Tensor, j:int, i:int ,n:int) -> torch.Tensor:
     """
     x.requires_grad=True
     # Initialize the gradient tensor to 1.0, as the 0th derivative is the function itself.
-    ann=net(x)[:,j].view(-1,1)
+    ann=net(x)
     grad_tensor = torch.ones(ann.size(), dtype=torch.float32, requires_grad=True)
     for _ in range(n):
-        Dann=torch.autograd.grad(ann, x, grad_outputs=grad_tensor, create_graph=True)[0][:,i]
+        Dann=torch.autograd.grad(ann, x, grad_outputs=grad_tensor, create_graph=True)[0][:,0]
         Dann=Dann.reshape(ann.shape)
         ann=Dann
     return ann
@@ -81,11 +58,3 @@ def sol_x(y0, t, delta, omega):
 
 # # Solución del oscilador
 # y = odeint(f, [x0, v0], t)
-#####################################################################
-def Param(T:torch.Tensor,net: torch.nn.Sequential) -> torch.Tensor:
-    ti=0.0
-    out = net(T)
-    a=(T[:,0]-ti)*1.0
-    b=1-torch.exp(ti-T[:,0])
-    #return torch.reshape(T[:,1],out.size()) + b*out
-    return T[:,1].view(-1,1) +a.view(-1,1) +b.view(-1,1)**2 * out
