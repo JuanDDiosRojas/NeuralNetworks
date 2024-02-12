@@ -88,3 +88,14 @@ def Param(T:torch.Tensor,net: torch.nn.Sequential) -> torch.Tensor:
     b=1-torch.exp(ti-T[:,0])
     #return torch.reshape(T[:,1],out.size()) + b*out
     return T[:,1].view(-1,1) +a.view(-1,1) +b.view(-1,1)**2 * out
+###################################################################
+def Param_dirich(T:torch.Tensor,net:any, ti:float)->torch.Tensor:
+    '''This is the reparametrization of the ANN to meet the Dirichlet conditions
+    T: is the tensor to be evaluated, T=T[t,x0]
+    net: is the neural network 
+    ti: the time such as ANN(ti)=x0
+    '''
+    out = net(T)
+    b=1-torch.exp(ti-T[:,0])
+    return T[:,1].view(-1,1) +b.view(-1,1)*out
+
